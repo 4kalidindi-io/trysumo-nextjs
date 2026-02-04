@@ -1,20 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+const NEWS_API_KEY = process.env.NEWS_API_KEY;
+
 export async function GET(request: NextRequest) {
+  if (!NEWS_API_KEY) {
+    return NextResponse.json({ error: 'News API key not configured' }, { status: 500 });
+  }
+
   const searchParams = request.nextUrl.searchParams;
   const query = searchParams.get('q');
-  const apiKey = process.env.NEXT_PUBLIC_NEWS_API_KEY || searchParams.get('apiKey');
 
   if (!query) {
     return NextResponse.json({ error: 'Query parameter is required' }, { status: 400 });
   }
 
-  if (!apiKey) {
-    return NextResponse.json({ error: 'API key is required' }, { status: 401 });
-  }
-
   try {
-    const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&language=en&sortBy=publishedAt&pageSize=20&apiKey=${apiKey}`;
+    const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&language=en&sortBy=publishedAt&pageSize=20&apiKey=${NEWS_API_KEY}`;
 
     const response = await fetch(url, {
       headers: {

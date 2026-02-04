@@ -35,24 +35,6 @@ export default function LiveNewsApp() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [showApiKey, setShowApiKey] = useState(false);
-  const [apiKey, setApiKey] = useState('');
-
-  // Initialize API key
-  useEffect(() => {
-    const savedKey = localStorage.getItem('newsApiKey');
-    if (savedKey) {
-      setApiKey(savedKey);
-    } else {
-      setApiKey(process.env.NEXT_PUBLIC_NEWS_API_KEY || '');
-    }
-  }, []);
-
-  const saveApiKey = () => {
-    localStorage.setItem('newsApiKey', apiKey);
-    setShowApiKey(false);
-    loadAllNews();
-  };
 
   const fetchNewsForCategory = useCallback(async (category: Category) => {
     const cat = CATEGORIES.find((c) => c.key === category);
@@ -60,7 +42,7 @@ export default function LiveNewsApp() {
 
     try {
       // Use server-side API route to avoid CORS issues with NewsAPI
-      const url = `/api/news?q=${encodeURIComponent(cat.query)}${apiKey ? `&apiKey=${apiKey}` : ''}`;
+      const url = `/api/news?q=${encodeURIComponent(cat.query)}`;
       const response = await fetch(url);
 
       if (!response.ok) {
@@ -82,7 +64,7 @@ export default function LiveNewsApp() {
       console.error(`Error fetching ${category} news:`, err);
       throw err;
     }
-  }, [apiKey]);
+  }, []);
 
   const loadAllNews = useCallback(async () => {
     setIsLoading(true);
@@ -131,42 +113,7 @@ export default function LiveNewsApp() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-primary-900">📰 Live News Stream</h1>
-        <button
-          onClick={() => setShowApiKey(!showApiKey)}
-          className="text-sm text-primary-500 hover:text-primary-700"
-        >
-          🔑 API Key
-        </button>
-      </div>
-
-      {/* API Key Section */}
-      {showApiKey && (
-        <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-card">
-          <p className="text-sm text-primary-600 mb-3">
-            Enter your NewsAPI key from{' '}
-            <a href="https://newsapi.org/register" target="_blank" rel="noopener noreferrer" className="underline">
-              newsapi.org
-            </a>
-          </p>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              placeholder="Enter your NewsAPI key..."
-              className="flex-1 px-3 py-2 border border-primary-200 rounded-button text-sm focus:outline-none focus:border-primary-400"
-            />
-            <button
-              onClick={saveApiKey}
-              className="px-4 py-2 bg-primary-900 text-white text-sm font-medium rounded-button hover:bg-primary-800"
-            >
-              Save & Load News
-            </button>
-          </div>
-        </div>
-      )}
+      <h1 className="text-2xl font-bold text-primary-900 mb-6">Live News Stream</h1>
 
       {/* Status Bar */}
       {lastUpdated && (
