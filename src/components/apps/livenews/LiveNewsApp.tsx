@@ -56,10 +56,11 @@ export default function LiveNewsApp() {
 
   const fetchNewsForCategory = useCallback(async (category: Category) => {
     const cat = CATEGORIES.find((c) => c.key === category);
-    if (!cat || !apiKey) return [];
+    if (!cat) return [];
 
     try {
-      const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(cat.query)}&language=en&sortBy=publishedAt&pageSize=20&apiKey=${apiKey}`;
+      // Use server-side API route to avoid CORS issues with NewsAPI
+      const url = `/api/news?q=${encodeURIComponent(cat.query)}${apiKey ? `&apiKey=${apiKey}` : ''}`;
       const response = await fetch(url);
 
       if (!response.ok) {
@@ -84,11 +85,6 @@ export default function LiveNewsApp() {
   }, [apiKey]);
 
   const loadAllNews = useCallback(async () => {
-    if (!apiKey) {
-      setShowApiKey(true);
-      return;
-    }
-
     setIsLoading(true);
     setError(null);
 
@@ -112,16 +108,14 @@ export default function LiveNewsApp() {
     } finally {
       setIsLoading(false);
     }
-  }, [apiKey, fetchNewsForCategory]);
+  }, [fetchNewsForCategory]);
 
   // Load news on mount and set up auto-refresh
   useEffect(() => {
-    if (apiKey) {
-      loadAllNews();
-      const interval = setInterval(loadAllNews, 5 * 60 * 1000);
-      return () => clearInterval(interval);
-    }
-  }, [apiKey, loadAllNews]);
+    loadAllNews();
+    const interval = setInterval(loadAllNews, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [loadAllNews]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -219,7 +213,7 @@ export default function LiveNewsApp() {
         <div className="text-center py-12">
           <div className="text-4xl mb-4">🗞️</div>
           <p className="text-primary-500">
-            {apiKey ? 'No news articles found for this category' : 'Enter your API key to start streaming news'}
+            No news articles found for this category
           </p>
         </div>
       )}
