@@ -17,10 +17,8 @@ export default function TripPlannerApp() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [followUp, setFollowUp] = useState('');
-  const [showApiKey, setShowApiKey] = useState(false);
-  const [apiKey, setApiKey] = useState('');
 
-  // Initialize dates and API key
+  // Initialize dates
   useEffect(() => {
     const today = new Date();
     const checkInDate = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
@@ -28,13 +26,6 @@ export default function TripPlannerApp() {
 
     setCheckIn(checkInDate.toISOString().split('T')[0]);
     setCheckOut(checkOutDate.toISOString().split('T')[0]);
-
-    const savedKey = localStorage.getItem('tripPlannerKey');
-    if (savedKey) {
-      setApiKey(savedKey);
-    } else {
-      setApiKey(process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY || '');
-    }
   }, []);
 
   // Update kid ages when count changes
@@ -46,11 +37,6 @@ export default function TripPlannerApp() {
       return prev.slice(0, kids);
     });
   }, [kids]);
-
-  const saveApiKey = () => {
-    localStorage.setItem('tripPlannerKey', apiKey);
-    setShowApiKey(false);
-  };
 
   const buildPrompt = () => {
     const kidInfo = kids > 0
@@ -71,33 +57,19 @@ Please provide:
   };
 
   const sendMessage = async (content: string) => {
-    if (!apiKey) {
-      alert('Please set your API key first');
-      setShowApiKey(true);
-      return;
-    }
-
     const userMessage: Message = { role: 'user', content };
     setMessages((prev) => [...prev, userMessage]);
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true',
         },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-5-20250929',
-          max_tokens: 2048,
-          system: `You are a warm, family-friendly vacation guide. Help families plan amazing trips with personalized itineraries, activity recommendations, dining suggestions, and family-specific guidance. Be enthusiastic but practical.`,
-          messages: [...messages, userMessage].map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
+          system: 'You are a warm, family-friendly vacation guide. Help families plan amazing trips with personalized itineraries, activity recommendations, dining suggestions, and family-specific guidance. Be enthusiastic but practical.',
+          messages: [...messages, userMessage],
         }),
       });
 
@@ -115,7 +87,7 @@ Please provide:
       console.error('Error:', error);
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: 'Sorry, there was an error processing your request. Please check your API key and try again.' },
+        { role: 'assistant', content: 'Sorry, there was an error processing your request. Please try again later.' },
       ]);
     } finally {
       setIsLoading(false);
@@ -146,40 +118,7 @@ Please provide:
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold text-primary-900 mb-6">✈️ Trip Planner</h1>
-
-      {/* API Key Banner */}
-      <div className="mb-6">
-        <button
-          onClick={() => setShowApiKey(!showApiKey)}
-          className="text-sm text-primary-500 hover:text-primary-700 flex items-center gap-1"
-        >
-          🔑 {showApiKey ? 'Hide' : 'Configure'} API Key
-        </button>
-
-        {showApiKey && (
-          <div className="mt-3 p-4 bg-amber-50 border border-amber-200 rounded-card">
-            <p className="text-sm text-primary-600 mb-3">
-              Enter your Anthropic API key to use the Trip Planner.
-            </p>
-            <div className="flex gap-2">
-              <input
-                type="password"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="sk-ant-..."
-                className="flex-1 px-3 py-2 border border-primary-200 rounded-button text-sm focus:outline-none focus:border-primary-400"
-              />
-              <button
-                onClick={saveApiKey}
-                className="px-4 py-2 bg-primary-900 text-white text-sm font-medium rounded-button hover:bg-primary-800"
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
+      <h1 className="text-2xl font-bold text-primary-900 mb-6">Trip Planner</h1>
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Form */}
