@@ -26,6 +26,12 @@ export default function ProductivityPage() {
           title="Spin Wheel"
           description="Random name picker for decisions & raffles"
         />
+        <AppCard
+          href="/productivity/focus"
+          icon="🎯"
+          title="Focus"
+          description="Schedule events & focus timer sessions"
+        />
       </div>
     </Container>
   );
