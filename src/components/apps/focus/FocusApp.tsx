@@ -228,7 +228,7 @@ export default function FocusApp() {
                 <svg className="w-5 h-5 text-accent-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                Today's Schedule
+                Today&apos;s Schedule
               </h2>
 
               {/* Add Event Form */}
@@ -345,7 +345,7 @@ export default function FocusApp() {
 
               {/* Today's Stats */}
               <div className="mt-6 pt-6 border-t border-primary-100">
-                <h3 className="text-sm font-semibold text-primary-900 mb-3">Today's Progress</h3>
+                <h3 className="text-sm font-semibold text-primary-900 mb-3">Today&apos;s Progress</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-primary-50 rounded-xl p-4 text-center">
                     <div className="text-2xl font-bold text-accent-600">{sessionsToday.length}</div>
