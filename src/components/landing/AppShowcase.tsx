@@ -25,6 +25,18 @@ const apps: AppCard[] = [
     features: ['25/5 work cycles', 'Session tracking', 'Break reminders'],
   },
   {
+    href: '/productivity/spinwheel',
+    title: 'Spin Wheel',
+    description: 'Random name picker for decisions, raffles, and fun games.',
+    gradient: 'from-pink-500 to-purple-500',
+    icon: (
+      <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+      </svg>
+    ),
+    features: ['Custom entries', 'Spin animation', 'Winner celebration'],
+  },
+  {
     href: '/games/snake',
     title: 'Snake Game',
     description: 'Classic arcade fun to refresh your mind between tasks.',

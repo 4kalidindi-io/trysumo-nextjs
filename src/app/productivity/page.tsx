@@ -20,6 +20,12 @@ export default function ProductivityPage() {
           title="Pomodoro App"
           description="Focus timer with work & break cycles"
         />
+        <AppCard
+          href="/productivity/spinwheel"
+          icon="🎡"
+          title="Spin Wheel"
+          description="Random name picker for decisions & raffles"
+        />
       </div>
     </Container>
   );
