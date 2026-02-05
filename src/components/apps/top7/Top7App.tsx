@@ -67,7 +67,7 @@ const PROMPTS: Prompt[] = [
   {
     id: 12,
     question: "Name a fast food restaurant",
-    answers: ["McDonald's", "Burger King", "Wendy's", "Taco Bell", "KFC", "Subway", "Chick-fil-A"],
+    answers: ["McDonalds", "Burger King", "Wendys", "Taco Bell", "KFC", "Subway", "Chick-fil-A"],
   },
   {
     id: 13,
@@ -113,6 +113,8 @@ const PROMPTS: Prompt[] = [
 
 type GameState = 'menu' | 'playing' | 'reveal' | 'gameover';
 
+const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
 export default function Top7App() {
   const [gameState, setGameState] = useState<GameState>('menu');
   const [currentPrompt, setCurrentPrompt] = useState<Prompt | null>(null);
@@ -123,34 +125,41 @@ export default function Top7App() {
   const [score, setScore] = useState(0);
   const [round, setRound] = useState(0);
   const [totalScore, setTotalScore] = useState(0);
+  const [hints, setHints] = useState(0);
+  const [hintLetters, setHintLetters] = useState<{ [key: number]: number[] }>({}); // index -> revealed letter positions
+  const [usedLetters, setUsedLetters] = useState<Set<string>>(new Set());
+  const [correctCount, setCorrectCount] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const MAX_STRIKES = 3;
   const TOTAL_ROUNDS = 5;
+  const HINTS_PER_CORRECT = 2; // Get a hint every 2 correct answers
 
   const startGame = () => {
     setUsedPrompts([]);
     setTotalScore(0);
     setRound(0);
+    setHints(1); // Start with 1 hint
+    setCorrectCount(0);
     nextRound([]);
   };
 
   const nextRound = (used: number[]) => {
-    const prompt = PROMPTS.filter(p => !used.includes(p.id))[
-      Math.floor(Math.random() * (PROMPTS.length - used.length))
-    ];
-
-    if (!prompt || round >= TOTAL_ROUNDS) {
+    const available = PROMPTS.filter(p => !used.includes(p.id));
+    if (available.length === 0 || round >= TOTAL_ROUNDS) {
       setGameState('gameover');
       return;
     }
 
+    const prompt = available[Math.floor(Math.random() * available.length)];
     setCurrentPrompt(prompt);
     setUsedPrompts([...used, prompt.id]);
     setRevealedAnswers(new Array(7).fill(false));
+    setHintLetters({});
     setStrikes(0);
     setScore(0);
     setGuess('');
+    setUsedLetters(new Set());
     setRound(prev => prev + 1);
     setGameState('playing');
     setTimeout(() => inputRef.current?.focus(), 100);
@@ -165,6 +174,15 @@ export default function Top7App() {
 
     const normalizedGuess = normalizeAnswer(guess);
     let found = false;
+
+    // Add letters to used set
+    const newUsedLetters = new Set(usedLetters);
+    guess.toUpperCase().split('').forEach(letter => {
+      if (ALPHABET.includes(letter)) {
+        newUsedLetters.add(letter);
+      }
+    });
+    setUsedLetters(newUsedLetters);
 
     currentPrompt.answers.forEach((answer, index) => {
       if (revealedAnswers[index]) return;
@@ -183,6 +201,13 @@ export default function Top7App() {
         const points = 7 - index;
         setScore(prev => prev + points);
         found = true;
+
+        // Award hints for correct answers
+        const newCorrectCount = correctCount + 1;
+        setCorrectCount(newCorrectCount);
+        if (newCorrectCount % HINTS_PER_CORRECT === 0) {
+          setHints(prev => prev + 1);
+        }
       }
     });
 
@@ -199,6 +224,76 @@ export default function Top7App() {
     if (revealedAnswers.filter(Boolean).length + (found ? 1 : 0) === 7) {
       setTimeout(() => endRound(), 500);
     }
+  };
+
+  const applyHint = (answerIndex: number) => {
+    if (hints <= 0 || !currentPrompt || revealedAnswers[answerIndex]) return;
+
+    const answer = currentPrompt.answers[answerIndex];
+    const letterOnlyAnswer = answer.replace(/[^a-zA-Z]/g, '');
+    const currentRevealed = hintLetters[answerIndex] || [];
+
+    // Find unrevealed letter positions
+    const unrevealedPositions: number[] = [];
+    for (let i = 0; i < letterOnlyAnswer.length; i++) {
+      if (!currentRevealed.includes(i)) {
+        unrevealedPositions.push(i);
+      }
+    }
+
+    if (unrevealedPositions.length === 0) return;
+
+    // Reveal 1-2 random letters
+    const numToReveal = Math.min(2, unrevealedPositions.length);
+    const newRevealed = [...currentRevealed];
+    for (let i = 0; i < numToReveal; i++) {
+      const randomIdx = Math.floor(Math.random() * unrevealedPositions.length);
+      newRevealed.push(unrevealedPositions[randomIdx]);
+      unrevealedPositions.splice(randomIdx, 1);
+    }
+
+    setHintLetters({ ...hintLetters, [answerIndex]: newRevealed });
+    setHints(prev => prev - 1);
+  };
+
+  const renderAnswerDisplay = (answer: string, index: number) => {
+    if (revealedAnswers[index]) {
+      return <span className="text-white font-semibold">{answer}</span>;
+    }
+
+    const revealedPositions = hintLetters[index] || [];
+    const letterOnlyAnswer = answer.replace(/[^a-zA-Z]/g, '');
+
+    // Create display with blanks and revealed letters
+    let letterIdx = 0;
+    const display = answer.split('').map((char, i) => {
+      if (/[a-zA-Z]/.test(char)) {
+        const isRevealed = revealedPositions.includes(letterIdx);
+        letterIdx++;
+        if (isRevealed) {
+          return (
+            <span key={i} className="text-amber-400 font-bold">
+              {char.toUpperCase()}
+            </span>
+          );
+        }
+        return (
+          <span key={i} className="text-white/50 font-mono">
+            _
+          </span>
+        );
+      } else if (char === ' ') {
+        return <span key={i} className="mx-1" />;
+      }
+      return <span key={i} className="text-white/30">{char}</span>;
+    });
+
+    return (
+      <span className="tracking-wider">
+        {display}
+        <span className="text-white/30 text-xs ml-2">({letterOnlyAnswer.length})</span>
+      </span>
+    );
   };
 
   const endRound = () => {
@@ -251,7 +346,10 @@ export default function Top7App() {
                 <span className="text-amber-400">★</span> 3 strikes per round
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-amber-400">★</span> Top answers = more points
+                <span className="text-amber-400">★</span> Earn hints for correct answers
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-amber-400">★</span> Used letters fade away
               </li>
             </ul>
             <button
@@ -265,14 +363,18 @@ export default function Top7App() {
 
         {/* Playing */}
         {gameState === 'playing' && currentPrompt && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Score & Round */}
             <div className="flex justify-between items-center bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2">
               <div className="text-white/80 text-sm">Round {round} / {TOTAL_ROUNDS}</div>
               <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1 text-amber-400">
+                  <span>💡</span>
+                  <span className="font-bold">{hints}</span>
+                </div>
                 <div className="flex gap-1">
                   {[...Array(MAX_STRIKES)].map((_, i) => (
-                    <span key={i} className={`text-2xl ${i < strikes ? 'opacity-100' : 'opacity-30'}`}>
+                    <span key={i} className={`text-xl ${i < strikes ? 'opacity-100' : 'opacity-30'}`}>
                       ❌
                     </span>
                   ))}
@@ -282,40 +384,68 @@ export default function Top7App() {
             </div>
 
             {/* Question */}
-            <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-6 text-center shadow-lg">
-              <h2 className="text-2xl md:text-3xl font-bold text-white">
+            <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-5 text-center shadow-lg">
+              <h2 className="text-xl md:text-2xl font-bold text-white">
                 {currentPrompt.question}
               </h2>
             </div>
 
             {/* Answer Board */}
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 space-y-2">
+            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 space-y-2">
               {currentPrompt.answers.map((answer, index) => (
                 <div
                   key={index}
-                  className={`flex items-center justify-between p-3 rounded-xl transition-all ${
+                  className={`flex items-center justify-between p-2.5 rounded-xl transition-all ${
                     revealedAnswers[index]
                       ? 'bg-emerald-500/30 border border-emerald-400'
                       : 'bg-white/10 border border-white/20'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
+                    <span className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-sm ${
                       revealedAnswers[index] ? 'bg-emerald-500 text-white' : 'bg-white/20 text-white/50'
                     }`}>
                       {index + 1}
                     </span>
-                    <span className={`font-semibold ${
-                      revealedAnswers[index] ? 'text-white' : 'text-white/30'
-                    }`}>
-                      {revealedAnswers[index] ? answer : '???'}
+                    <span className="text-sm">
+                      {renderAnswerDisplay(answer, index)}
                     </span>
                   </div>
-                  {revealedAnswers[index] && (
-                    <span className="text-amber-400 font-bold">+{7 - index}</span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {!revealedAnswers[index] && hints > 0 && (
+                      <button
+                        onClick={() => applyHint(index)}
+                        className="px-2 py-1 bg-amber-500/30 hover:bg-amber-500/50 text-amber-300 text-xs rounded-lg transition-colors"
+                        title="Use hint"
+                      >
+                        💡 Hint
+                      </button>
+                    )}
+                    {revealedAnswers[index] && (
+                      <span className="text-amber-400 font-bold text-sm">+{7 - index}</span>
+                    )}
+                  </div>
                 </div>
               ))}
+            </div>
+
+            {/* Letter Tracker */}
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-3">
+              <p className="text-white/40 text-xs mb-2 text-center">Available Letters</p>
+              <div className="flex flex-wrap justify-center gap-1">
+                {ALPHABET.map(letter => (
+                  <span
+                    key={letter}
+                    className={`w-7 h-7 flex items-center justify-center rounded text-sm font-mono transition-all ${
+                      usedLetters.has(letter)
+                        ? 'bg-white/5 text-white/20 line-through'
+                        : 'bg-white/10 text-white/70'
+                    }`}
+                  >
+                    {letter}
+                  </span>
+                ))}
+              </div>
             </div>
 
             {/* Input */}
@@ -354,6 +484,7 @@ export default function Top7App() {
             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 text-center">
               <h2 className="text-2xl font-bold text-white mb-2">Round Complete!</h2>
               <p className="text-white/70">You scored {score} points this round</p>
+              <p className="text-amber-400 text-sm mt-1">💡 {hints} hints remaining</p>
             </div>
 
             {/* All Answers */}
