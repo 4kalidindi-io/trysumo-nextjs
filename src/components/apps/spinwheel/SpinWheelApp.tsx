@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 
 const DEFAULT_NAMES = [
-  'Alice', 'Bob', 'Charlie', 'Diana', 'Eve', 'Frank'
+  'Anay', 'Surendra', 'Anshu', 'Shilpa', 'Lucky'
 ];
 
 const COLORS = [
