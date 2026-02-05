@@ -26,6 +26,12 @@ export default function GamesPage() {
           title="Modern Pong"
           description="Classic pong with power-ups & 2-player mode"
         />
+        <AppCard
+          href="/games/trivia"
+          icon="🧠"
+          title="Trivia Challenge"
+          description="Buzz in & test your knowledge with AI checking"
+        />
       </div>
     </Container>
   );
