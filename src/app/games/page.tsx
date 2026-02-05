@@ -20,6 +20,12 @@ export default function GamesPage() {
           title="Snake"
           description="Eat, grow, and don't hit the walls"
         />
+        <AppCard
+          href="/games/pong"
+          icon="🏓"
+          title="Modern Pong"
+          description="Classic pong with power-ups & 2-player mode"
+        />
       </div>
     </Container>
   );

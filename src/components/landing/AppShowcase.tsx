@@ -50,6 +50,18 @@ const apps: AppCard[] = [
     features: ['Arrow & WASD controls', 'High score tracking', 'Mobile support'],
   },
   {
+    href: '/games/pong',
+    title: 'Modern Pong',
+    description: 'Classic pong reimagined with power-ups and multiplayer.',
+    gradient: 'from-amber-500 to-orange-500',
+    icon: (
+      <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+    ),
+    features: ['Single & 2-player modes', 'Power-ups', 'AI opponent'],
+  },
+  {
     href: '/aiagents/tripplanner',
     title: 'AI Trip Planner',
     description: 'Plan your perfect vacation with AI-powered recommendations.',
