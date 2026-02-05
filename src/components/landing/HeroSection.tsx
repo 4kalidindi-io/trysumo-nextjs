@@ -30,7 +30,7 @@ export default function HeroSection() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
-          <span>8 apps live now</span>
+          <span>9 apps live now</span>
         </div>
 
         {/* Main heading */}
@@ -71,7 +71,7 @@ export default function HeroSection() {
         {/* Stats row */}
         <div className="mt-16 flex flex-wrap justify-center gap-8 md:gap-16">
           {[
-            { value: '8', label: 'Apps' },
+            { value: '9', label: 'Apps' },
             { value: '24/7', label: 'Available' },
             { value: 'Free', label: 'Forever' },
           ].map((stat, i) => (

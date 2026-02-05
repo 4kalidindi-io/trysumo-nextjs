@@ -20,6 +20,12 @@ export default function AIAgentsPage() {
           title="Trip Planner"
           description="AI-powered family vacation guide"
         />
+        <AppCard
+          href="/aiagents/calorieai"
+          icon="📸"
+          title="Calorie AI"
+          description="Snap a photo to get instant nutrition info"
+        />
       </div>
     </Container>
   );
