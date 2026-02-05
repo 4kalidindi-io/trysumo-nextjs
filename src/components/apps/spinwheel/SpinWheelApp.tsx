@@ -236,7 +236,19 @@ export default function SpinWheelApp({ size = 400 }: SpinWheelProps) {
             {winner && !isSpinning && (
               <div className="mt-6 p-6 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 text-center animate-bounce-in">
                 <p className="text-white/70 text-sm uppercase tracking-wider mb-2">Winner</p>
-                <p className="text-3xl font-bold text-white">{winner}</p>
+                <p className="text-3xl font-bold text-white mb-4">{winner}</p>
+                <button
+                  onClick={() => {
+                    setNames(names.filter(n => n !== winner));
+                    setWinner(null);
+                  }}
+                  className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 font-medium rounded-lg transition-colors border border-red-500/30 flex items-center gap-2 mx-auto"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Remove from list
+                </button>
               </div>
             )}
           </div>
@@ -251,7 +263,7 @@ export default function SpinWheelApp({ size = 400 }: SpinWheelProps) {
                 type="text"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onKeyDown={handleKeyPress}
                 placeholder="Enter a name..."
                 className="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
                 disabled={isSpinning}
