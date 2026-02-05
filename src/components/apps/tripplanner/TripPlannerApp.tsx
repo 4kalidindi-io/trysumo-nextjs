@@ -61,6 +61,9 @@ Please provide:
     setMessages((prev) => [...prev, userMessage]);
     setIsLoading(true);
 
+    // Add empty assistant message that we'll stream into
+    setMessages((prev) => [...prev, { role: 'assistant', content: '' }]);
+
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
@@ -68,7 +71,7 @@ Please provide:
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          system: 'You are a warm, family-friendly vacation guide. Help families plan amazing trips with personalized itineraries, activity recommendations, dining suggestions, and family-specific guidance. Be enthusiastic but practical.',
+          system: 'You are a warm, family-friendly vacation guide. Help families plan amazing trips with personalized itineraries, activity recommendations, dining suggestions, and family-specific guidance. Be enthusiastic but practical. Keep responses concise and well-organized.',
           messages: [...messages, userMessage],
         }),
       });
@@ -77,18 +80,56 @@ Please provide:
         throw new Error(`API error: ${response.status}`);
       }
 
-      const data = await response.json();
-      const assistantMessage: Message = {
-        role: 'assistant',
-        content: data.content[0].text,
-      };
-      setMessages((prev) => [...prev, assistantMessage]);
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) {
+        throw new Error('No response body');
+      }
+
+      let fullContent = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6);
+            if (data === '[DONE]') continue;
+
+            try {
+              const parsed = JSON.parse(data);
+              if (parsed.type === 'content_block_delta' && parsed.delta?.text) {
+                fullContent += parsed.delta.text;
+                setMessages((prev) => {
+                  const newMessages = [...prev];
+                  newMessages[newMessages.length - 1] = {
+                    role: 'assistant',
+                    content: fullContent,
+                  };
+                  return newMessages;
+                });
+              }
+            } catch {
+              // Skip non-JSON lines
+            }
+          }
+        }
+      }
     } catch (error) {
       console.error('Error:', error);
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', content: 'Sorry, there was an error processing your request. Please try again later.' },
-      ]);
+      setMessages((prev) => {
+        const newMessages = [...prev];
+        newMessages[newMessages.length - 1] = {
+          role: 'assistant',
+          content: 'Sorry, there was an error processing your request. Please try again later.',
+        };
+        return newMessages;
+      });
     } finally {
       setIsLoading(false);
     }
@@ -270,16 +311,11 @@ Please provide:
                     />
                   </div>
                 ))}
-                {isLoading && (
-                  <div className="p-3 bg-primary-50 rounded-lg">
-                    <div className="text-xs font-medium text-primary-500 mb-1">
-                      Trip Planner
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                      <span className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                      <span className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                    </div>
+                {isLoading && messages[messages.length - 1]?.content === '' && (
+                  <div className="flex items-center gap-1 mt-2">
+                    <span className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                   </div>
                 )}
               </div>

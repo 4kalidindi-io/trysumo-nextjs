@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
@@ -9,9 +9,9 @@ interface Message {
 
 export async function POST(request: NextRequest) {
   if (!ANTHROPIC_API_KEY) {
-    return NextResponse.json(
-      { error: 'Anthropic API key not configured' },
-      { status: 500 }
+    return new Response(
+      JSON.stringify({ error: 'Anthropic API key not configured' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 
@@ -23,9 +23,9 @@ export async function POST(request: NextRequest) {
     };
 
     if (!messages || !Array.isArray(messages)) {
-      return NextResponse.json(
-        { error: 'Messages array is required' },
-        { status: 400 }
+      return new Response(
+        JSON.stringify({ error: 'Messages array is required' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -37,8 +37,9 @@ export async function POST(request: NextRequest) {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-5-20250929',
-        max_tokens: 2048,
+        model: 'claude-3-5-haiku-20241022',
+        max_tokens: 1024,
+        stream: true,
         system: system || 'You are a helpful assistant.',
         messages: messages.map((m) => ({
           role: m.role,
@@ -50,19 +51,25 @@ export async function POST(request: NextRequest) {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.error('Anthropic API error:', response.status, errorData);
-      return NextResponse.json(
-        { error: `API error: ${response.status}` },
-        { status: response.status }
+      return new Response(
+        JSON.stringify({ error: `API error: ${response.status}` }),
+        { status: response.status, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    const data = await response.json();
-    return NextResponse.json(data);
+    // Return the stream directly
+    return new Response(response.body, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    });
   } catch (error) {
     console.error('Chat API error:', error);
-    return NextResponse.json(
-      { error: 'Failed to process chat request' },
-      { status: 500 }
+    return new Response(
+      JSON.stringify({ error: 'Failed to process chat request' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 }
