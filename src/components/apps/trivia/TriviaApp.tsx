@@ -10,26 +10,31 @@ interface Question {
 }
 
 const TRIVIA_QUESTIONS: Question[] = [
-  { id: 1, question: "What is the capital of France?", answer: "Paris", category: "Geography" },
-  { id: 2, question: "Who painted the Mona Lisa?", answer: "Leonardo da Vinci", category: "Art" },
-  { id: 3, question: "What is the largest planet in our solar system?", answer: "Jupiter", category: "Science" },
-  { id: 4, question: "In what year did World War II end?", answer: "1945", category: "History" },
-  { id: 5, question: "What is the chemical symbol for gold?", answer: "Au", category: "Science" },
-  { id: 6, question: "Who wrote Romeo and Juliet?", answer: "William Shakespeare", category: "Literature" },
-  { id: 7, question: "What is the tallest mountain in the world?", answer: "Mount Everest", category: "Geography" },
-  { id: 8, question: "How many continents are there?", answer: "7", category: "Geography" },
-  { id: 9, question: "What is the speed of light in km/s (approximately)?", answer: "300000", category: "Science" },
-  { id: 10, question: "Who was the first person to walk on the moon?", answer: "Neil Armstrong", category: "History" },
-  { id: 11, question: "What is the largest ocean on Earth?", answer: "Pacific Ocean", category: "Geography" },
-  { id: 12, question: "What year was the iPhone first released?", answer: "2007", category: "Technology" },
-  { id: 13, question: "What is the hardest natural substance on Earth?", answer: "Diamond", category: "Science" },
-  { id: 14, question: "Who invented the telephone?", answer: "Alexander Graham Bell", category: "History" },
-  { id: 15, question: "What is the smallest country in the world?", answer: "Vatican City", category: "Geography" },
-  { id: 16, question: "How many bones are in the adult human body?", answer: "206", category: "Science" },
-  { id: 17, question: "What is the capital of Japan?", answer: "Tokyo", category: "Geography" },
-  { id: 18, question: "Who wrote the Harry Potter series?", answer: "J.K. Rowling", category: "Literature" },
-  { id: 19, question: "What is the largest mammal in the world?", answer: "Blue whale", category: "Science" },
-  { id: 20, question: "In what year did the Titanic sink?", answer: "1912", category: "History" },
+  { id: 1, question: "What is the capital of Mongolia?", answer: "Ulaanbaatar", category: "Geography" },
+  { id: 2, question: "Who painted 'The Persistence of Memory' featuring melting clocks?", answer: "Salvador Dali", category: "Art" },
+  { id: 3, question: "What is the only planet that rotates clockwise?", answer: "Venus", category: "Science" },
+  { id: 4, question: "In what year was the Berlin Wall torn down?", answer: "1989", category: "History" },
+  { id: 5, question: "What is the chemical symbol for tungsten?", answer: "W", category: "Science" },
+  { id: 6, question: "Who wrote '1984' and 'Animal Farm'?", answer: "George Orwell", category: "Literature" },
+  { id: 7, question: "What is the deepest point in the ocean called?", answer: "Challenger Deep", category: "Geography" },
+  { id: 8, question: "How many elements are in the periodic table?", answer: "118", category: "Science" },
+  { id: 9, question: "What is the smallest bone in the human body?", answer: "Stapes", category: "Science" },
+  { id: 10, question: "Who was the first woman to win a Nobel Prize?", answer: "Marie Curie", category: "History" },
+  { id: 11, question: "What country has the longest coastline in the world?", answer: "Canada", category: "Geography" },
+  { id: 12, question: "In what year was the first email sent?", answer: "1971", category: "Technology" },
+  { id: 13, question: "What is the most abundant gas in Earth's atmosphere?", answer: "Nitrogen", category: "Science" },
+  { id: 14, question: "Who discovered penicillin?", answer: "Alexander Fleming", category: "History" },
+  { id: 15, question: "What is the largest desert in the world?", answer: "Antarctic Desert", category: "Geography" },
+  { id: 16, question: "How many chromosomes do humans have?", answer: "46", category: "Science" },
+  { id: 17, question: "What is the currency of South Korea?", answer: "Won", category: "Geography" },
+  { id: 18, question: "Who wrote 'The Great Gatsby'?", answer: "F. Scott Fitzgerald", category: "Literature" },
+  { id: 19, question: "What is the powerhouse of the cell?", answer: "Mitochondria", category: "Science" },
+  { id: 20, question: "What ancient wonder was located in Alexandria, Egypt?", answer: "Lighthouse of Alexandria", category: "History" },
+  { id: 21, question: "What is the longest river in Asia?", answer: "Yangtze", category: "Geography" },
+  { id: 22, question: "Who composed 'The Four Seasons'?", answer: "Vivaldi", category: "Art" },
+  { id: 23, question: "What planet has the most moons?", answer: "Saturn", category: "Science" },
+  { id: 24, question: "In what year did the Soviet Union collapse?", answer: "1991", category: "History" },
+  { id: 25, question: "What is the rarest blood type?", answer: "AB negative", category: "Science" },
 ];
 
 type GameState = 'menu' | 'playing' | 'buzzed' | 'checking' | 'result' | 'gameover';
@@ -232,7 +237,7 @@ export default function TriviaApp() {
             </p>
             <ul className="text-left text-white/60 text-sm mb-8 max-w-xs mx-auto space-y-2">
               <li className="flex items-center gap-2">
-                <span className="text-emerald-400">✓</span> 20 general knowledge questions
+                <span className="text-emerald-400">✓</span> 25 challenging questions
               </li>
               <li className="flex items-center gap-2">
                 <span className="text-emerald-400">✓</span> AI checks your answers
@@ -256,7 +261,7 @@ export default function TriviaApp() {
             {/* Score bar */}
             <div className="flex justify-between items-center bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2">
               <div className="text-white/80 text-sm">
-                Question {totalAnswered + 1} / 20
+                Question {totalAnswered + 1} / 25
               </div>
               <div className="flex items-center gap-4">
                 {streak >= 2 && (
@@ -354,7 +359,7 @@ export default function TriviaApp() {
             <div className="text-white/60 mb-6">
               Score: {score} / {totalAnswered}
             </div>
-            {usedQuestions.length < 20 ? (
+            {usedQuestions.length < 25 ? (
               <button
                 onClick={nextQuestion}
                 className="px-8 py-4 bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-white font-bold text-lg rounded-xl transition-all hover:scale-105"
