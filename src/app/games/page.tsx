@@ -32,6 +32,12 @@ export default function GamesPage() {
           title="Trivia Challenge"
           description="Buzz in & test your knowledge with AI checking"
         />
+        <AppCard
+          href="/games/top7"
+          icon="🎯"
+          title="Top 7"
+          description="Guess the most popular answers!"
+        />
       </div>
     </Container>
   );
