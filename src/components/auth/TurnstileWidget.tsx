@@ -38,12 +38,10 @@ export default function TurnstileWidget({
   useEffect(() => {
     const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
-    // In development without site key, auto-verify
+    // Auto-verify when site key is not configured
     if (!siteKey) {
-      console.warn('Turnstile site key not configured, auto-verifying in development');
-      if (process.env.NODE_ENV === 'development') {
-        onVerify('dev-token');
-      }
+      console.warn('Turnstile site key not configured, auto-verifying');
+      onVerify('bypass-token');
       return;
     }
 
@@ -100,12 +98,9 @@ export default function TurnstileWidget({
 
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
-  if (!siteKey && process.env.NODE_ENV === 'development') {
-    return (
-      <div className="flex items-center justify-center p-3 bg-primary-100 rounded-lg text-sm text-primary-600">
-        CAPTCHA disabled in development
-      </div>
-    );
+  // Don't render anything if no site key (auto-verified in useEffect)
+  if (!siteKey) {
+    return null;
   }
 
   return <div ref={containerRef} className="flex justify-center" />;
