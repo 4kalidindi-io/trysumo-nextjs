@@ -2,9 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Header() {
   const pathname = usePathname();
+  const { user, loading, logout } = useAuth();
 
   const isActive = (path: string) => {
     return pathname.startsWith(path);
@@ -57,6 +59,40 @@ export default function Header() {
             >
               News
             </Link>
+
+            {/* Auth buttons */}
+            <div className="flex items-center gap-3 ml-2 pl-4 border-l border-primary-200">
+              {loading ? (
+                <div className="w-20 h-8 bg-primary-100 rounded-button animate-pulse" />
+              ) : user ? (
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-primary-600">
+                    Hi, <span className="font-medium text-primary-900">{user.name.split(' ')[0]}</span>
+                  </span>
+                  <button
+                    onClick={logout}
+                    className="text-sm font-medium text-primary-500 hover:text-primary-900 transition-colors"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="text-sm font-medium text-primary-500 hover:text-primary-900 transition-colors"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="text-sm font-medium px-4 py-1.5 bg-accent-600 hover:bg-accent-700 text-white rounded-button transition-colors"
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
+            </div>
           </nav>
         </div>
       </div>
