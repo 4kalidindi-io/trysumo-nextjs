@@ -39,6 +39,12 @@ export default function GamesPage() {
           title="Top 7"
           description="Guess the most popular answers!"
         />
+        <AppCard
+          href="/games/hangman"
+          icon="🪢"
+          title="Hangman"
+          description="Guess the word before time runs out!"
+        />
       </div>
       <div className="mt-8">
         <AdBanner position="bottom" />

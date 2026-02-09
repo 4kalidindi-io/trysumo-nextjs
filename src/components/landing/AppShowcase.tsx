@@ -146,6 +146,18 @@ const apps: AppCard[] = [
     ),
     features: ['Flashcards & quizzes', 'Memory tricks', 'Adaptive learning'],
   },
+  {
+    href: '/games/hangman',
+    title: 'Hangman',
+    description: 'Classic word guessing game with 1-word and 2-word modes.',
+    gradient: 'from-rose-500 to-pink-500',
+    icon: (
+      <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5h12M9 3v2m1.048 3.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+      </svg>
+    ),
+    features: ['1-word & 2-word modes', 'Keyboard support', 'Score & streak tracking'],
+  },
 ];
 
 function AppCard({ app }: { app: AppCard }) {
