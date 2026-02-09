@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import BackLink from '@/components/layout/BackLink';
 import Container from '@/components/shared/Container';
 import AppCard from '@/components/shared/AppCard';
+import { AdBanner } from '@/components/ads';
 
 export const metadata: Metadata = {
   title: 'Productivity – TrySumo.App',
@@ -32,6 +33,9 @@ export default function ProductivityPage() {
           title="Focus"
           description="Schedule events & focus timer sessions"
         />
+      </div>
+      <div className="mt-8">
+        <AdBanner position="bottom" />
       </div>
     </Container>
   );
