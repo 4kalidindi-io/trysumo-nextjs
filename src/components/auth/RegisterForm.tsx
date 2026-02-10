@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import TurnstileWidget from './TurnstileWidget';
 import PasswordStrength from './PasswordStrength';
 
 export default function RegisterForm() {
@@ -12,7 +11,6 @@ export default function RegisterForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [turnstileToken, setTurnstileToken] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -37,7 +35,6 @@ export default function RegisterForm() {
           name,
           email,
           password,
-          turnstileToken,
         }),
       });
 
@@ -156,13 +153,6 @@ export default function RegisterForm() {
             {confirmPassword && confirmPassword !== password && (
               <p className="text-danger-500 text-xs mt-1">Passwords do not match</p>
             )}
-          </div>
-
-          <div className="pt-2">
-            <TurnstileWidget
-              onVerify={setTurnstileToken}
-              onExpire={() => setTurnstileToken('')}
-            />
           </div>
 
           <button
