@@ -13,7 +13,7 @@ interface Article {
   category: string;
 }
 
-type Category = 'all' | 'business' | 'technology' | 'education' | 'health';
+type Category = 'all' | 'business' | 'technology' | 'education' | 'health' | 'sports';
 
 const CATEGORIES: { key: Category; label: string; query: string }[] = [
   { key: 'all', label: 'All News', query: 'latest OR breaking OR news' },
@@ -21,6 +21,7 @@ const CATEGORIES: { key: Category; label: string; query: string }[] = [
   { key: 'technology', label: 'Technology', query: 'technology OR tech OR AI OR software OR innovation' },
   { key: 'education', label: 'Kids Research', query: 'kids education OR child development OR learning OR STEM' },
   { key: 'health', label: 'Emotional Intelligence', query: 'emotional intelligence OR mental health OR mindfulness OR psychology' },
+  { key: 'sports', label: 'Sports', query: 'sports OR football OR basketball OR baseball OR soccer OR game OR match OR tournament OR championship' },
 ];
 
 export default function LiveNewsApp() {
@@ -31,6 +32,7 @@ export default function LiveNewsApp() {
     technology: [],
     education: [],
     health: [],
+    sports: [],
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -81,6 +83,7 @@ export default function LiveNewsApp() {
         technology: results[2] || [],
         education: results[3] || [],
         health: results[4] || [],
+        sports: results[5] || [],
       };
 
       setArticles(newArticles);
