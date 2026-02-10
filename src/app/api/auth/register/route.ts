@@ -3,7 +3,6 @@ import { connectToDatabase } from '@/lib/db';
 import { User } from '@/models/User';
 import { hashPassword, generateOTP, getOTPExpiry } from '@/lib/auth';
 import { validateEmail, validatePassword, validateName, sanitizeInput } from '@/lib/validation';
-import { verifyTurnstileToken } from '@/lib/turnstile';
 import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { sendOTPEmail } from '@/lib/email';
 
@@ -27,16 +26,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { email, name, password, turnstileToken } = body;
-
-    // Validate Turnstile token
-    const turnstileValid = await verifyTurnstileToken(turnstileToken, ip);
-    if (!turnstileValid) {
-      return NextResponse.json(
-        { success: false, error: 'CAPTCHA verification failed. Please try again.' },
-        { status: 400 }
-      );
-    }
+    const { email, name, password } = body;
 
     // Validate inputs
     if (!email || !name || !password) {
