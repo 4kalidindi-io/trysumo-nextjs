@@ -99,7 +99,7 @@ const apps: AppCard[] = [
     features: ['Photo analysis', 'Calorie & macro tracking', 'Health tips'],
   },
   {
-    href: '/news/livenews',
+    href: '/news',
     title: 'Live News Stream',
     description: 'Stay informed with real-time news across multiple categories.',
     gradient: 'from-blue-500 to-cyan-500',
