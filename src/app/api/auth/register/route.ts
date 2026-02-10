@@ -80,11 +80,15 @@ export async function POST(request: NextRequest) {
         await existingUser.save();
 
         // Send OTP email
-        await sendOTPEmail(sanitizedEmail, otp, sanitizedName);
+        const emailSentForResend = await sendOTPEmail(sanitizedEmail, otp, sanitizedName);
+        const isDevelopmentMode = !process.env.RESEND_API_KEY;
 
         return NextResponse.json({
           success: true,
-          message: 'Verification email sent. Please check your inbox.',
+          message: emailSentForResend
+            ? 'Verification email sent. Please check your inbox.'
+            : 'Verification email prepared. Check server logs for your code.',
+          ...(isDevelopmentMode && { otp, devMode: true, note: 'OTP included because RESEND_API_KEY is not configured' }),
         });
       }
 
@@ -116,12 +120,17 @@ export async function POST(request: NextRequest) {
 
     if (!emailSent) {
       console.error('Failed to send OTP email to:', sanitizedEmail);
-      // Still return success - user can request resend
     }
+
+    // Include OTP in response for development/testing when email is not configured
+    const isDevelopment = !process.env.RESEND_API_KEY;
 
     return NextResponse.json({
       success: true,
-      message: 'Account created! Please check your email for the verification code.',
+      message: emailSent
+        ? 'Account created! Please check your email for the verification code.'
+        : 'Account created! Check server logs for your verification code.',
+      ...(isDevelopment && { otp, devMode: true, note: 'OTP included because RESEND_API_KEY is not configured' }),
     });
   } catch (error) {
     console.error('Registration error:', error);

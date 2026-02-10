@@ -45,6 +45,11 @@ export default function RegisterForm() {
         return;
       }
 
+      // Show OTP in development mode if included in response
+      if (data.devMode && data.otp) {
+        alert(`✅ Account created!\n\n🔑 Your verification code: ${data.otp}\n\n⚠️ This is shown because email is not configured.\nIn production, you'll receive this via email.`);
+      }
+
       // Redirect to verification page
       router.push(`/verify-email?email=${encodeURIComponent(email)}`);
     } catch {

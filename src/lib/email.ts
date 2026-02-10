@@ -21,6 +21,21 @@ export async function sendOTPEmail(
   otp: string,
   name: string
 ): Promise<boolean> {
+  // Development fallback: log OTP to console if Resend is not configured
+  if (!process.env.RESEND_API_KEY) {
+    console.log('================================================');
+    console.log('📧 EMAIL SENT (DEV MODE - No Resend API Key)');
+    console.log('================================================');
+    console.log(`To: ${email}`);
+    console.log(`Name: ${name}`);
+    console.log(`OTP Code: ${otp}`);
+    console.log(`Expires: 10 minutes from now`);
+    console.log('================================================');
+    console.log('\n⚠️  To send real emails, set RESEND_API_KEY in your environment variables');
+    console.log('Get your API key at: https://resend.com/api-keys\n');
+    return true; // Return true so registration succeeds in dev
+  }
+
   try {
     const client = getResendClient();
     const { error } = await client.emails.send({
