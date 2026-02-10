@@ -17,6 +17,11 @@ export default function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  // Check if Turnstile is configured
+  const isTurnstileConfigured = typeof window !== 'undefined'
+    ? !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
+    : false;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -27,8 +32,8 @@ export default function RegisterForm() {
       return;
     }
 
-    // Check Turnstile token
-    if (!turnstileToken && process.env.NODE_ENV !== 'development') {
+    // Check Turnstile token (only if Turnstile is configured)
+    if (isTurnstileConfigured && !turnstileToken) {
       setError('Please complete the CAPTCHA');
       return;
     }
@@ -173,7 +178,7 @@ export default function RegisterForm() {
 
           <button
             type="submit"
-            disabled={isLoading || (!turnstileToken && process.env.NODE_ENV !== 'development')}
+            disabled={isLoading || (isTurnstileConfigured && !turnstileToken)}
             className="w-full py-3 bg-accent-600 hover:bg-accent-700 disabled:bg-primary-300 text-white font-semibold rounded-button transition-colors"
           >
             {isLoading ? 'Creating account...' : 'Create Account'}
