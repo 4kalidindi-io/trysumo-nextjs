@@ -45,6 +45,12 @@ export default function GamesPage() {
           title="Hangman"
           description="Guess the word before time runs out!"
         />
+        <AppCard
+          href="/games/penalty"
+          icon="⚽"
+          title="Penalty Shootout"
+          description="Take 5 penalties and save 5 shots to win!"
+        />
       </div>
       <div className="mt-8">
         <AdBanner position="bottom" />
