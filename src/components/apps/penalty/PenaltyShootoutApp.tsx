@@ -69,10 +69,26 @@ function Striker({ color, kicking }: { color: string; kicking: boolean }) {
   );
 }
 
-function Goalkeeper({ color, diveZone }: { color: string; diveZone: Zone | null }) {
-  const transform = diveZone !== null ? DIVE[diveZone] : 'translate(0,0)';
+const KEEPER_SWAY_CSS = `
+@keyframes keeperSway {
+  0%,100% { transform: translateX(0px)   translateY(0px); }
+  18%     { transform: translateX(-28px) translateY(-6px) rotate(-4deg); }
+  35%     { transform: translateX(-10px) translateY(-2px) rotate(-1deg); }
+  50%     { transform: translateX(0px)   translateY(0px); }
+  68%     { transform: translateX(28px)  translateY(-6px) rotate(4deg); }
+  85%     { transform: translateX(10px)  translateY(-2px) rotate(1deg); }
+}`;
+
+function Goalkeeper({ color, diveZone, isIdle }: { color: string; diveZone: Zone | null; isIdle?: boolean }) {
+  const divStyle: React.CSSProperties = isIdle
+    ? { animation: 'keeperSway 1.05s ease-in-out infinite', display: 'inline-block' }
+    : {
+        display: 'inline-block',
+        transform: diveZone !== null ? DIVE[diveZone] : 'translate(0,0)',
+        transition: diveZone !== null ? 'transform 0.38s cubic-bezier(0.1,0,0.2,1)' : 'none',
+      };
   return (
-    <div style={{ transform, transition: 'transform 0.38s cubic-bezier(0.1,0,0.2,1)', display: 'inline-block' }}>
+    <div style={divStyle}>
       <svg width="66" height="60" viewBox="0 0 66 60" fill="none">
         {/* head */}
         <circle cx="33" cy="9" r="8" fill={color} />
@@ -236,6 +252,8 @@ export default function PenaltyShootoutApp() {
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
+    <>
+    <style>{KEEPER_SWAY_CSS}</style>
     <div className="bg-gradient-to-b from-green-700 via-green-800 to-green-900 rounded-2xl overflow-hidden select-none">
 
       {/* ── Header ── */}
@@ -361,7 +379,7 @@ export default function PenaltyShootoutApp() {
               className="absolute"
               style={{ bottom: 2, left: '50%', transform: 'translateX(-50%)', zIndex: 15 }}
             >
-              <Goalkeeper color={keeperColor} diveZone={isKicking ? activeKeeperZone : null} />
+              <Goalkeeper color={keeperColor} diveZone={isKicking ? activeKeeperZone : null} isIdle={isAiming} />
             </div>
 
             {/* Keeper team label */}

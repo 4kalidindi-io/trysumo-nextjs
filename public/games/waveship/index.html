@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Wave Ship - Prototype</title>
+  <link rel="stylesheet" href="/games/waveship/style.css" />
+</head>
+<body>
+  <canvas id="game"></canvas>
+  <div id="diagnostic" style="position:fixed;left:12px;bottom:12px;z-index:9999;background:rgba(0,0,0,0.6);color:#fff;padding:8px 12px;border-radius:8px;font-family:system-ui, sans-serif;font-size:13px;">
+    <div id="diag-status">Loading...</div>
+    <button id="diag-start" style="margin-top:6px;padding:6px 8px;border-radius:6px;border:0;background:#0ea5e9;color:#012">Start (click)</button>
+    <pre id="diag-log" style="display:none;margin:6px 0 0;color:#fff;font-size:12px;max-width:420px;white-space:pre-wrap"></pre>
+  </div>
+  <div id="play-overlay" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(2,6,23,0.85), rgba(2,6,23,0.6));z-index:9998;">
+    <div style="text-align:center;color:#fff">
+      <h1 style="font-size:28px;margin-bottom:8px">Wave Ship</h1>
+      <button id="play-button" style="font-size:20px;padding:14px 20px;border-radius:12px;border:0;background:#06b6d4;color:#012;cursor:pointer">Click to Play</button>
+      <div style="margin-top:8px;opacity:0.9">Hold mouse / touch / Space to go up</div>
+    </div>
+  </div>
+  <script type="module" src="/games/waveship/js/debug.js"></script>
+  <script type="module" src="/games/waveship/js/main.js"></script>
+</body>
+</html>

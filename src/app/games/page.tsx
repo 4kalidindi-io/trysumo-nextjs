@@ -51,6 +51,12 @@ export default function GamesPage() {
           title="Penalty Shootout"
           description="Take 5 penalties and save 5 shots to win!"
         />
+        <AppCard
+          href="/games/waveship"
+          icon="🛸"
+          title="Wave Ship"
+          description="Hold to ride the wave — avoid obstacles and go far"
+        />
       </div>
       <div className="mt-8">
         <AdBanner position="bottom" />
